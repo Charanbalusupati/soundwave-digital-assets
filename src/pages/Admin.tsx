@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Upload, Image as ImageIcon, Audio, Dashboard, Users, Settings, BarChart3, Download, Plus } from 'lucide-react';
+import { Upload, Image as ImageIcon, Volume2, LayoutDashboard, Users, Settings, BarChart3, Download, Plus } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
 const Admin = () => {
@@ -41,7 +40,7 @@ const Admin = () => {
   };
 
   const sidebarItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Dashboard },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'upload', label: 'Upload', icon: Upload },
     { id: 'assets', label: 'Assets', icon: ImageIcon },
     { id: 'users', label: 'Users', icon: Users },
@@ -77,7 +76,7 @@ const Admin = () => {
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                   upload.type === 'audio' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'
                 }`}>
-                  {upload.type === 'audio' ? <Audio className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
+                  {upload.type === 'audio' ? <Volume2 className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">{upload.title}</h4>

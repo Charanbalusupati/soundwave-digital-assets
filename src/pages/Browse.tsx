@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Search, Filter, Download, Play, Image as ImageIcon, Audio } from 'lucide-react';
+import { Search, Filter, Download, Play, Image as ImageIcon, Volume2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import AudioPlayer from '../components/AudioPlayer';
 
@@ -102,7 +101,7 @@ const Browse = () => {
         {/* Type indicator */}
         <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
           {asset.type === 'audio' ? (
-            <Audio className="w-4 h-4 text-white" />
+            <Volume2 className="w-4 h-4 text-white" />
           ) : (
             <ImageIcon className="w-4 h-4 text-white" />
           )}
@@ -169,7 +168,7 @@ const Browse = () => {
               <div className="bg-white/60 backdrop-blur-sm rounded-full p-1 border border-white/20">
                 {[
                   { id: 'all', label: 'All Assets', icon: Filter },
-                  { id: 'audio', label: 'Audio', icon: Audio },
+                  { id: 'audio', label: 'Audio', icon: Volume2 },
                   { id: 'image', label: 'Images', icon: ImageIcon }
                 ].map((tab) => (
                   <button

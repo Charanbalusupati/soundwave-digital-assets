@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Download, Play, Image, Audio } from 'lucide-react';
+import { Download, Play, Image, Volume2 } from 'lucide-react';
 
 const FeaturedAssets = () => {
   const audioTracks = [
@@ -61,7 +60,7 @@ const FeaturedAssets = () => {
         {/* Type indicator */}
         <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
           {asset.type === 'audio' ? (
-            <Audio className="w-4 h-4 text-white" />
+            <Volume2 className="w-4 h-4 text-white" />
           ) : (
             <Image className="w-4 h-4 text-white" />
           )}
