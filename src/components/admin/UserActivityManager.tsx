@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Users, Download, Calendar, MapPin, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,16 +10,16 @@ import { supabase } from '@/integrations/supabase/client';
 interface DownloadActivity {
   id: string;
   downloaded_at: string;
-  ip_address?: string;
-  user_agent?: string;
+  ip_address?: string | null;
+  user_agent?: string | null;
   assets: {
     title: string;
     file_type: string;
-    category?: string;
+    category?: string | null;
   } | null;
   profiles?: {
-    full_name?: string;
-    email?: string;
+    full_name?: string | null;
+    email?: string | null;
   } | null;
 }
 
@@ -48,7 +47,7 @@ const UserActivityManager: React.FC = () => {
       const daysAgo = new Date();
       daysAgo.setDate(daysAgo.getDate() - parseInt(filterPeriod));
       
-      // Fetch download activities
+      // Fetch download activities with proper error handling for relations
       const { data: downloads, error } = await supabase
         .from('downloads')
         .select(`
@@ -57,14 +56,10 @@ const UserActivityManager: React.FC = () => {
           ip_address,
           user_agent,
           user_id,
-          assets (
+          assets!inner (
             title,
             file_type,
             category
-          ),
-          profiles (
-            full_name,
-            email
           )
         `)
         .gte('downloaded_at', daysAgo.toISOString())
@@ -72,7 +67,17 @@ const UserActivityManager: React.FC = () => {
 
       if (error) throw error;
 
-      setActivities(downloads || []);
+      // Transform the data to match our interface
+      const transformedActivities: DownloadActivity[] = (downloads || []).map(download => ({
+        id: download.id,
+        downloaded_at: download.downloaded_at || '',
+        ip_address: download.ip_address ? String(download.ip_address) : null,
+        user_agent: download.user_agent,
+        assets: download.assets,
+        profiles: null // We'll fetch profiles separately if needed
+      }));
+
+      setActivities(transformedActivities);
 
       // Calculate stats
       const totalDownloads = downloads?.length || 0;
@@ -81,23 +86,23 @@ const UserActivityManager: React.FC = () => {
       
       const today = new Date().toDateString();
       const todayDownloads = downloads?.filter(d => 
-        new Date(d.downloaded_at).toDateString() === today
+        new Date(d.downloaded_at || '').toDateString() === today
       ).length || 0;
 
       // Find most downloaded asset
-      const assetDownloads: { [key: string]: { title: string; count: number } } = {};
+      const assetDownloads: { [key: string]: { title: string; downloads: number } } = {};
       downloads?.forEach(download => {
         if (download.assets?.title) {
           const title = download.assets.title;
           if (!assetDownloads[title]) {
-            assetDownloads[title] = { title, count: 0 };
+            assetDownloads[title] = { title, downloads: 0 };
           }
-          assetDownloads[title].count++;
+          assetDownloads[title].downloads++;
         }
       });
 
       const topAsset = Object.values(assetDownloads).reduce((max, current) => 
-        current.count > (max?.count || 0) ? { title: current.title, downloads: current.count } : max, 
+        current.downloads > (max?.downloads || 0) ? { title: current.title, downloads: current.downloads } : max, 
         null as { title: string; downloads: number } | null
       );
 
@@ -131,7 +136,7 @@ const UserActivityManager: React.FC = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  const getBrowserInfo = (userAgent?: string) => {
+  const getBrowserInfo = (userAgent?: string | null) => {
     if (!userAgent) return 'Unknown';
     
     if (userAgent.includes('Chrome')) return 'Chrome';
